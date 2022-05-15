@@ -1,9 +1,13 @@
 import {configureStore} from '@reduxjs/toolkit';
+import testReducer from './slices/test';
 import mapReducer from './slices/map';
+import tableReducer from './slices/table';
 
 const store = configureStore({
 	reducer: {
-		map: mapReducer
+		test: testReducer,
+		map: mapReducer,
+		table: tableReducer
 	}
 });
 

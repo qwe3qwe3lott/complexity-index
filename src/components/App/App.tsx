@@ -14,7 +14,7 @@ const App: React.FC = () => {
 			<Route path="*" element={<Navigate to="/" replace/>}/>
 		</Route>
 	</Routes>);
-	/*const {test, loading, error} = useAppSelector(state => state.map);
+	/*const {test, loading, error} = useAppSelector(state => state.test);
 	const dispatch = useAppDispatch();
 
 	useEffect(() => {

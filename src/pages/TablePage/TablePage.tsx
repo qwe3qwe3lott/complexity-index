@@ -1,10 +1,12 @@
 import React from 'react';
+import TableFilter from '../../components/TableFilter';
+import Table from '../../components/Table';
 
-import styles from './TablePage.module.scss';
 
 const TablePage: React.FC = () => {
-	return (<section className={styles.section}>
-		Table
+	return (<section>
+		<TableFilter/>
+		<Table/>
 	</section>);
 };
 

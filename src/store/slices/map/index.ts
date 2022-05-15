@@ -1,59 +1,59 @@
-import {AnyAction, createAsyncThunk, createSlice, PayloadAction} from '@reduxjs/toolkit';
-
-type MapState = {
-	test: number
-	loading: boolean
-	error: string | null
-};
+import {createAsyncThunk, createSlice, PayloadAction} from '@reduxjs/toolkit';
+import {MapState} from './types';
+import {delay} from '../../../util/delay';
+import {RootState} from '../../index';
 
 const initialState: MapState = {
-	test: 0,
-	loading: false,
-	error: null
+	years: [],
+	selectedYear: 0,
+	regions: [
+		{label: 'World'},
+		{label: 'Africa', code: '002'},
+		{label: 'Europe', code: '150'},
+		{label: 'Americas', code: '019'},
+		{label: 'Asia', code: '142'},
+		{label: 'Oceania', code: '009'}
+	],
+	selectedRegion: {label: 'World'},
+	indexValues: []
 };
-
-export const fetchTest = createAsyncThunk<number, undefined, {rejectValue: string}>(
-	'map/fetchTest',
-	async function (_, { rejectWithValue }) {
-		const response = await fetch('https://jsonplaceholder.typicode.com/todos?_limit=10');
-
-		if (!response.ok) {
-			return rejectWithValue('error');
-		}
-
-		const data = await response.json();
-
-		return data.length;
-	}
-);
 
 const mapSlice = createSlice({
 	name: 'map',
 	initialState,
 	reducers: {
-		inc(state, action: PayloadAction<number>) {
-			state.test += action.payload;
+		selectYear(state, action: PayloadAction<number>) {
+			state.selectedYear = action.payload;
+		},
+		selectRegion(state, action: PayloadAction<string>) {
+			const region = state.regions.find(region => region.label === action.payload);
+			if (!region) return;
+			state.selectedRegion = region;
 		}
 	},
 	extraReducers: (builder) => {
 		builder
-			.addCase(fetchTest.pending, (state) => {
-				state.loading = true;
-				state.error = null;
-			})
-			.addCase(fetchTest.fulfilled, (state, action) => {
-				state.loading = false;
-				state.test += action.payload;
+			.addCase(fetchYears.fulfilled, (state, action) => {
+				state.years = action.payload;
 			});
-
-		builder.addMatcher(isError, (state, action: PayloadAction<string>) => {
-			state.error = action.payload;
-			state.loading = false;
-		});
 	}
 });
 
-const isError = (action: AnyAction) => action.type.endsWith('rejected');
+export const fetchYears = createAsyncThunk<number[], undefined, {state: RootState}>(
+	'map/fetchYears',
+	async function () {
+		if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
+			await delay(300);
+			return [2022, 2021, 2020];
+		}
+		const response = await fetch(`${process.env.REACT_APP_BACKEND_BASE_URL}getYears`);
+		if (!response.ok) return [];
+		return await response.json() as number[];
+	},
+	{
+		condition: (_, {getState}): boolean => getState().map.years.length === 0
+	}
+);
 
-export const {inc} = mapSlice.actions;
+export const {selectYear, selectRegion} = mapSlice.actions;
 export default mapSlice.reducer;

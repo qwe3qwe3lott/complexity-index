@@ -1,10 +1,12 @@
 import React from 'react';
 
-import styles from './MapPage.module.scss';
+import MapFilter from '../../components/MapFilter';
+import MapChart from '../../components/MapChart';
 
 const MapPage: React.FC = () => {
-	return (<section className={styles.section}>
-		Map
+	return (<section>
+		<MapFilter/>
+		<MapChart/>
 	</section>);
 };
 
