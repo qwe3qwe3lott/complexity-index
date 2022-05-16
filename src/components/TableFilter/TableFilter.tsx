@@ -2,10 +2,11 @@ import React, {useEffect} from 'react';
 
 import styles from './TableFilter.module.scss';
 import {useAppDispatch, useAppSelector} from '../../hooks/typedReduxHooks';
-import {fetchIndexValues, fetchYears} from '../../store/slices/table';
+import {fetchIndexValues} from '../../store/slices/table';
+import {fetchYears} from '../../store/slices/merge';
 
 const TableFilter: React.FC = () => {
-	const years = useAppSelector(state => state.table.years);
+	const years = useAppSelector(state => state.merge.years);
 	const selectedYear = useAppSelector(state => state.table.selectedYear);
 	const dispatch = useAppDispatch();
 

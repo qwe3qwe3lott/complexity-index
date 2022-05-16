@@ -9,7 +9,6 @@ export enum RowsPerPage {
 }
 
 export type TableState = {
-	years: number[]
 	selectedYear: number
 	indexValues: IndexValue[]
 	currentPage: number

@@ -1,12 +1,11 @@
 import {createAsyncThunk, createSlice, PayloadAction} from '@reduxjs/toolkit';
 import {RowsPerPage, TableState} from './types';
 import {RootState} from '../../index';
-import {setIndexValues, setYears} from '../merge';
+import {setIndexValues} from '../merge';
 import {SortSetup} from '../../../types/SortSetup';
 import {IndexValue} from '../../../types/IndexValue';
 
 const initialState: TableState = {
-	years: [],
 	selectedYear: 0,
 	indexValues: [],
 	currentPage: 1,
@@ -56,9 +55,6 @@ const tableSlice = createSlice({
 	},
 	extraReducers: (builder) => {
 		builder
-			.addCase(fetchYears.fulfilled, (state, action) => {
-				state.years = action.payload;
-			})
 			.addCase(fetchIndexValues.fulfilled, ((state, action) => {
 				state.indexValues = action.payload;
 				state.sortSetup = { property: 'index', sortAtoZ: false };
@@ -66,21 +62,6 @@ const tableSlice = createSlice({
 			}));
 	}
 });
-
-export const fetchYears = createAsyncThunk<number[], undefined, {state: RootState}>(
-	'table/fetchYears',
-	async function (_, {getState, dispatch}) {
-		if (getState().merge.years.length !== 0) return getState().merge.years;
-		const response = await fetch(`${process.env.REACT_APP_BACKEND_BASE_URL}getYears`);
-		if (!response.ok) return [];
-		const years = await response.json() as number[];
-		dispatch(setYears(years));
-		return years;
-	},
-	{
-		condition: (_, {getState}): boolean => getState().table.years.length === 0
-	}
-);
 
 export const fetchIndexValues = createAsyncThunk<IndexValue[], number, {state: RootState}>(
 	'table/fetchIndexValues',

@@ -5,8 +5,8 @@
   -moz-appearance: none;
   text-align: center;
   padding: 0.25em 2em 0.25em 0.5em;
-  background-color: $select-background-color;
-  color: $select-text-color;
+  background-color: $primary-color;
+  color: $primary-text-color;
   border-radius: 0.5em;
   background-image: url("~/src/assets/dropdown.svg");
   background-repeat: no-repeat;
@@ -16,7 +16,7 @@
 
 @mixin button {
   padding: 0.25em 0.5em;
-  background-color: $select-background-color;
-  color: $select-text-color;
+  background-color: $primary-color;
+  color: $primary-text-color;
   border-radius: 0.5em;
 }

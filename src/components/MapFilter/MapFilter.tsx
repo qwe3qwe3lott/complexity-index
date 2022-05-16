@@ -2,10 +2,11 @@ import React, {useEffect} from 'react';
 
 import styles from './MapFilter.module.scss';
 import {useAppDispatch, useAppSelector} from '../../hooks/typedReduxHooks';
-import {fetchIndexValues, fetchYears, setRegion} from '../../store/slices/map';
+import {fetchIndexValues, setRegion} from '../../store/slices/map';
+import {fetchYears} from '../../store/slices/merge';
 
 const MapFilter: React.FC = () => {
-	const years = useAppSelector(state => state.map.years);
+	const years = useAppSelector(state => state.merge.years);
 	const selectedYear = useAppSelector(state => state.map.selectedYear);
 	const regions = useAppSelector(state => state.map.regions);
 	const selectedRegion = useAppSelector(state => state.map.selectedRegion);

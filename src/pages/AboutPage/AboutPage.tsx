@@ -1,9 +1,7 @@
 import React from 'react';
 
-import styles from './AboutPage.module.scss';
-
 const AboutPage: React.FC = () => {
-	return (<section className={styles.section}>
+	return (<section>
 		About
 	</section>);
 };

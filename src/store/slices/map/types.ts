@@ -6,7 +6,6 @@ export type Region = {
 }
 
 export type MapState = {
-	years: number[]
 	selectedYear: number
 	regions: Region[]
 	selectedRegion: Region

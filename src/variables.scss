@@ -4,21 +4,9 @@ $secondary-color: #07841B;
 $secondary-opposite-color: #FF0000;
 $body-background-color: #f4f2ee;
 $section-background-color: #E9E7E7;
-$section-text-color: #4b4949;
-$input-background-color: #ffffff;
-$input-text-color: #4b4949;
-$select-background-color: $primary-color;
-$select-text-color: $primary-text-color;
 
 $header-background-color: $primary-color;
 $header-text-color: $primary-text-color;
-
-$footer-background-color: $primary-color;
-$footer-text-color: $primary-text-color;
-
-$modal-background-color: rgba(black, .5);
-$modal-form-background-color: $section-background-color;
-$modal-form-text-color: $section-text-color;
 
 :export {
   primaryColor: $primary-color;
