@@ -4,13 +4,13 @@ import styles from './Table.module.scss';
 import TableHeader from '../TableHeader';
 import TableContent from '../TableContent';
 import TableFooter from '../TableFooter';
-import {ColumnSetup, ColumnWidthMetrics} from '../../types/ColumnSetup';
+import {ColumnModes, ColumnSetup, ColumnWidthMetrics} from '../../types/ColumnSetup';
 
 const Table: React.FC = () => {
 	const columnSetups: ColumnSetup[] = [
 		{ title: 'country', property: 'country'},
-		{ title: 'index', property: 'index', width: {value: 10, metric: ColumnWidthMetrics.em} },
-		{ title: 'dynamic', property: 'dynamic', width: {value: 10, metric: ColumnWidthMetrics.em} }
+		{ title: 'index', property: 'index', width: {value: 6, metric: ColumnWidthMetrics.em} },
+		{ title: 'dynamic', property: 'dynamic', width: {value: 7, metric: ColumnWidthMetrics.em}, mode: ColumnModes.PERCENT }
 	];
 
 	return(<div className={styles.container}>

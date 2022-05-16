@@ -11,6 +11,7 @@ type NavButton = {
 const Header: React.FC = () => {
 	const navButtons: NavButton[] = [
 		{label: 'About', path: '/'},
+		{label: 'Authors', path: '/authors'},
 		{label: 'Map', path: '/map'},
 		{label: 'Table', path: '/table'}
 	];

@@ -1,9 +1,11 @@
-import React, {useCallback, useMemo} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef} from 'react';
 
 import styles from './TableContent.module.scss';
-import {ColumnSetup, ColumnWidthMetrics} from '../../types/ColumnSetup';
+import {ColumnModes, ColumnSetup, ColumnWidthMetrics} from '../../types/ColumnSetup';
 import {useAppSelector} from '../../hooks/typedReduxHooks';
 import {IndexValue} from '../../types/IndexValue';
+
+import scssVariables from '../../index.scss';
 
 type Props = {
 	columnSetups: ColumnSetup[]
@@ -23,11 +25,47 @@ const TableContent: React.FC<Props> = ({columnSetups}) => {
 		return indexValues.slice(endIndex - rowsPerPage, endIndex);
 	}, [currentPage, rowsPerPage, indexValues]);
 
-	return(<ul className={styles.container}>
+	const listRef = useRef<HTMLUListElement>(null);
+	useEffect(() => {
+		if (!listRef.current) return;
+		listRef.current.scrollTo(0, 0);
+	}, [currentPage]);
+
+	const modifyValue = useCallback((value: IndexValue[keyof IndexValue], mode: ColumnModes | undefined) : IndexValue[keyof IndexValue] => {
+		if (value === null) return 'no info';
+		switch (mode) {
+		case ColumnModes.PERCENT:
+			if (isNaN(+value)) return value;
+			else value = +value;
+			return `${value < 0 ? '-' : ''}${Math.abs(value)}%`;
+		default:
+			return value;
+		}
+	}, []);
+
+	const getModifyStyles = useCallback((value: IndexValue[keyof IndexValue], mode: ColumnModes | undefined) : object => {
+		if (value === null) return {};
+		switch (mode) {
+		case ColumnModes.PERCENT:
+			if (isNaN(+value)) return {};
+			else value = +value;
+			if (value > 0) return { color: scssVariables.seconradyColor };
+			if (value < 0) return { color: scssVariables.secondaryOppositeColor };
+			return {};
+		default:
+			return {};
+		}
+	}, []);
+
+	return(<ul className={styles.container} ref={listRef}>
 		<li/>
 		{currentIndexValues.map(indexValue => <li key={indexValue.id} className={styles.element}>
-			{columnSetups.map(columnSetup => <span key={columnSetup.title} className={styles.span} style={getColumnWidth(columnSetup)}>
-				{indexValue[columnSetup.property as keyof IndexValue]}
+			{columnSetups.map(columnSetup => <span
+				key={columnSetup.title}
+				className={styles.span}
+				style={{...getColumnWidth(columnSetup), ...getModifyStyles(indexValue[columnSetup.property as keyof IndexValue], columnSetup.mode)}}
+			>
+				{modifyValue(indexValue[columnSetup.property as keyof IndexValue], columnSetup.mode)}
 			</span>)}
 		</li>)}
 	</ul>);

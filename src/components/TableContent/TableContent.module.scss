@@ -3,6 +3,16 @@
   padding: 0.3em 0;
   height: 50vh;
   overflow-y: auto;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+.container::-webkit-scrollbar {
+  width: 0.2em;
+}
+.container::-webkit-scrollbar-thumb {
+  background-color: $secondary-color;
+  border-radius: 0.1em;
 }
 .element {
   display: flex;
