@@ -2,7 +2,7 @@ import React, {useEffect} from 'react';
 
 import styles from './MapFilter.module.scss';
 import {useAppDispatch, useAppSelector} from '../../hooks/typedReduxHooks';
-import {fetchYears, selectRegion, selectYear} from '../../store/slices/map';
+import {fetchYears, setRegion, setYear} from '../../store/slices/map';
 
 const MapFilter: React.FC = () => {
 	const years = useAppSelector(state => state.map.years);
@@ -18,12 +18,12 @@ const MapFilter: React.FC = () => {
 	return(<div className={styles.container}>
 		<h2 className={styles.title}>Index on the map</h2>
 		<div className={styles.filters}>
-			<select className={styles.select} value={selectedRegion.label} onChange={(event) => dispatch(selectRegion(event.target.value))}>
+			<select className={styles.select} value={selectedRegion.label} onChange={(event) => dispatch(setRegion(event.target.value))}>
 				{regions.map(region => <option key={region.label}>
 					{region.label}
 				</option>)}
 			</select>
-			<select className={styles.select} value={selectedYear} onChange={(event) => dispatch(selectYear(+event.target.value))}>
+			<select className={styles.select} value={selectedYear} onChange={(event) => dispatch(setYear(+event.target.value))}>
 				<option value="0" disabled hidden>Choose year</option>
 				{years.map(year => <option key={year}>
 					{year}

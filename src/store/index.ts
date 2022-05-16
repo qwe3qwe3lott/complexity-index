@@ -2,12 +2,14 @@ import {configureStore} from '@reduxjs/toolkit';
 import testReducer from './slices/test';
 import mapReducer from './slices/map';
 import tableReducer from './slices/table';
+import mergeReducer from './slices/merge';
 
 const store = configureStore({
 	reducer: {
 		test: testReducer,
 		map: mapReducer,
-		table: tableReducer
+		table: tableReducer,
+		merge: mergeReducer
 	}
 });
 

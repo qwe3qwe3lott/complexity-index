@@ -2,6 +2,7 @@ import {createAsyncThunk, createSlice, PayloadAction} from '@reduxjs/toolkit';
 import {RowsPerPage, TableState} from './types';
 import {delay} from '../../../util/delay';
 import {RootState} from '../../index';
+import {setYears} from '../merge';
 
 const initialState: TableState = {
 	years: [],
@@ -23,7 +24,7 @@ const initialState: TableState = {
 		{id:14, index:3, country: 'c', dynamic: -1},
 		{id:15, index:3, country: 'c', dynamic: -1}
 	],
-	currentPage: 0,
+	currentPage: 1,
 	rowsPerPage: RowsPerPage.few,
 	sortSetup: { property: 'index', sortAtoZ: false }
 };
@@ -32,8 +33,15 @@ const tableSlice = createSlice({
 	name: 'table',
 	initialState,
 	reducers: {
-		selectYear(state, action: PayloadAction<number>) {
+		setYear(state, action: PayloadAction<number>) {
 			state.selectedYear = action.payload;
+		},
+		setRowsPerPage(state, action: PayloadAction<RowsPerPage>) {
+			state.rowsPerPage = action.payload;
+			state.currentPage = 1;
+		},
+		setCurrentPage(state, action: PayloadAction<number>) {
+			state.currentPage = action.payload;
 		}
 	},
 	extraReducers: (builder) => {
@@ -44,21 +52,26 @@ const tableSlice = createSlice({
 	}
 });
 
-export const fetchYears = createAsyncThunk<number[], undefined, {state: RootState}>(
-	'map/fetchYears',
-	async function () {
+export const fetchYears = createAsyncThunk<number[], undefined, {state: RootState, }>(
+	'table/fetchYears',
+	async function (_, {getState, dispatch}) {
+		if (getState().merge.years.length !== 0) return getState().merge.years;
 		if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
 			await delay(300);
-			return [2022, 2021, 2020];
+			const years = [2022, 2021, 2020];
+			dispatch(setYears(years));
+			return years;
 		}
 		const response = await fetch(`${process.env.REACT_APP_BACKEND_BASE_URL}getYears`);
 		if (!response.ok) return [];
-		return await response.json() as number[];
+		const years = await response.json() as number[];
+		dispatch(setYears(years));
+		return years;
 	},
 	{
 		condition: (_, {getState}): boolean => getState().table.years.length === 0
 	}
 );
 
-export const {selectYear} = tableSlice.actions;
+export const {setYear, setRowsPerPage, setCurrentPage} = tableSlice.actions;
 export default tableSlice.reducer;

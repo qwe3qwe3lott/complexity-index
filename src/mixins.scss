@@ -13,3 +13,10 @@
   background-position: center right 0.5em;
   background-size: 1em;
 }
+
+@mixin button {
+  padding: 0.25em 0.5em;
+  background-color: $select-background-color;
+  color: $select-text-color;
+  border-radius: 0.5em;
+}
