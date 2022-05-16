@@ -31,11 +31,11 @@ const TableFooter: React.FC = () => {
 	}, [totalRows, currentPage, rowsPerPage]);
 
 	const rowsPerPageList: number[] = useMemo(() => {
-		let array = Object.entries(RowsPerPage);
+		let array: [string | RowsPerPage, string | RowsPerPage][] = Object.entries(RowsPerPage);
 		// First part of array contains duplicates
-		array = array.splice(array.length / 2, array.length);
+		array = array.splice(0, array.length/2);
 		// There is necessity to get only enum values which are numbers
-		return array.map(el => el[1] as number);
+		return array.map(el => el[0] as number);
 	}, []);
 
 	const totalPagesArray: number[] = useMemo(() => Array.from({length: totalPages}, (_, i) => i + 1), [totalPages]);

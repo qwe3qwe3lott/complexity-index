@@ -1,15 +1,15 @@
 export enum ColumnWidthMetrics {
-	em = 'em',
-	px = 'px'
+	EM = 'EM',
+	PX = 'PX'
 }
 
 export enum ColumnModes {
 	PERCENT = 'percent'
 }
 
-export type ColumnSetup = {
+export type ColumnSetup<T> = {
 	title: string
-	property: string
+	property: keyof T,
 	width?: {
 		value: number,
 		metric: ColumnWidthMetrics

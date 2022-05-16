@@ -1,31 +1,16 @@
 import {createAsyncThunk, createSlice, PayloadAction} from '@reduxjs/toolkit';
 import {RowsPerPage, TableState} from './types';
-import {delay} from '../../../util/delay';
 import {RootState} from '../../index';
-import {setYears} from '../merge';
+import {setIndexValues, setYears} from '../merge';
+import {SortSetup} from '../../../types/SortSetup';
+import {IndexValue} from '../../../types/IndexValue';
 
 const initialState: TableState = {
 	years: [],
 	selectedYear: 0,
-	indexValues: [
-		{id:1, index:1, country: 'a', dynamic: 1},
-		{id:2, index:2, country: 'b', dynamic: 0},
-		{id:3, index:3, country: 'c', dynamic: -1},
-		{id:4, index:3, country: 'c', dynamic: -1},
-		{id:5, index:3, country: 'c', dynamic: -1},
-		{id:6, index:3, country: 'c', dynamic: -1},
-		{id:7, index:3, country: 'c', dynamic: -1},
-		{id:8, index:3, country: 'c', dynamic: -1},
-		{id:9, index:3, country: 'c', dynamic: -1},
-		{id:10, index:3, country: 'c', dynamic: -1},
-		{id:11, index:3, country: 'c', dynamic: -1},
-		{id:12, index:3, country: 'c', dynamic: -1},
-		{id:13, index:3, country: 'c', dynamic: -1},
-		{id:14, index:3, country: 'c', dynamic: -1},
-		{id:15, index:3, country: 'c', dynamic: -1}
-	],
+	indexValues: [],
 	currentPage: 1,
-	rowsPerPage: RowsPerPage.few,
+	rowsPerPage: RowsPerPage.FEW,
 	sortSetup: { property: 'index', sortAtoZ: false }
 };
 
@@ -42,26 +27,50 @@ const tableSlice = createSlice({
 		},
 		setCurrentPage(state, action: PayloadAction<number>) {
 			state.currentPage = action.payload;
+		},
+		setSortSetup(state, action: PayloadAction<SortSetup<IndexValue>>) {
+			state.sortSetup = action.payload;
+			switch (action.payload.property) {
+			case 'country':
+				state.indexValues = state.indexValues.sort((a, b) => {
+					if (a.country < b.country) return action.payload.sortAtoZ ? -1 : 1;
+					if (a.country > b.country) return action.payload.sortAtoZ ? 1 : -1;
+					return 0;
+				});
+				break;
+			case 'index':
+				state.indexValues = state.indexValues.sort((a, b) => action.payload.sortAtoZ ? a.index - b.index : b.index - a.index);
+				break;
+			case 'dynamic':
+				state.indexValues = state.indexValues.sort((a, b) => {
+					if (a.dynamic === null) {
+						if (b.dynamic == null) return 0;
+						else return 1;
+					}
+					if (b.dynamic === null) return -1;
+					return action.payload.sortAtoZ ? a.dynamic - b.dynamic : b.dynamic - a.dynamic;
+				});
+				break;
+			}
 		}
 	},
 	extraReducers: (builder) => {
 		builder
 			.addCase(fetchYears.fulfilled, (state, action) => {
 				state.years = action.payload;
-			});
+			})
+			.addCase(fetchIndexValues.fulfilled, ((state, action) => {
+				state.indexValues = action.payload;
+				state.sortSetup = { property: 'index', sortAtoZ: false };
+				state.currentPage = 1;
+			}));
 	}
 });
 
-export const fetchYears = createAsyncThunk<number[], undefined, {state: RootState, }>(
+export const fetchYears = createAsyncThunk<number[], undefined, {state: RootState}>(
 	'table/fetchYears',
 	async function (_, {getState, dispatch}) {
 		if (getState().merge.years.length !== 0) return getState().merge.years;
-		if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
-			await delay(300);
-			const years = [2022, 2021, 2020];
-			dispatch(setYears(years));
-			return years;
-		}
 		const response = await fetch(`${process.env.REACT_APP_BACKEND_BASE_URL}getYears`);
 		if (!response.ok) return [];
 		const years = await response.json() as number[];
@@ -73,5 +82,19 @@ export const fetchYears = createAsyncThunk<number[], undefined, {state: RootStat
 	}
 );
 
-export const {setYear, setRowsPerPage, setCurrentPage} = tableSlice.actions;
+export const fetchIndexValues = createAsyncThunk<IndexValue[], number, {state: RootState}>(
+	'table/fetchIndexValues',
+	async function (year,{getState, dispatch}) {
+		dispatch(setYear(year));
+		let indexValues = getState().merge.indexValuesThrowYears[year];
+		if (indexValues) return indexValues;
+		const response = await fetch(`${process.env.REACT_APP_BACKEND_BASE_URL}getComplexityIndexes?year=${year}`);
+		if (!response.ok) return [];
+		indexValues = await response.json() as IndexValue[];
+		dispatch(setIndexValues({year, indexValues}));
+		return indexValues;
+	}
+);
+
+export const {setYear, setRowsPerPage, setCurrentPage, setSortSetup} = tableSlice.actions;
 export default tableSlice.reducer;

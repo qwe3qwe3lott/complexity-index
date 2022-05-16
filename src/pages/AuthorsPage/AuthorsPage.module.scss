@@ -3,7 +3,7 @@
   text-align: center;
   font-size: 1.6em;
   padding: 1em 0;
-  color: $primary-color;
+  color: $secondary-color;
 }
 .cards {
   display: grid;
@@ -12,7 +12,7 @@
     grid-template-columns: 1fr;
   }
   gap: 1em;
-  padding: 0 1em;
+  padding: 0 1em 1em 1em;
 }
 .card {
   padding: 1.5em;
@@ -46,13 +46,14 @@
   align-self: center;
 }
 .cardTitle {
-  color: $primary-color;
+  color: $secondary-color;
   font-size: 1.4em;
 }
 .cardList {
   padding-left: 1em;
 }
 .cardListItem {
+  text-align: justify;
   list-style: disc outside;
   margin: 0.5em 0;
 }

@@ -1,8 +1,8 @@
 import {createAsyncThunk, createSlice, PayloadAction} from '@reduxjs/toolkit';
 import {MapState} from './types';
-import {delay} from '../../../util/delay';
 import {RootState} from '../../index';
-import {setYears} from '../merge';
+import {setIndexValues, setYears} from '../merge';
+import {IndexValue} from '../../../types/IndexValue';
 
 const initialState: MapState = {
 	years: [],
@@ -58,7 +58,10 @@ const mapSlice = createSlice({
 		builder
 			.addCase(fetchYears.fulfilled, (state, action) => {
 				state.years = action.payload;
-			});
+			})
+			.addCase(fetchIndexValues.fulfilled, ((state, action) => {
+				state.indexValues = action.payload;
+			}));
 	}
 });
 
@@ -66,12 +69,6 @@ export const fetchYears = createAsyncThunk<number[], undefined, {state: RootStat
 	'map/fetchYears',
 	async function (_, {getState, dispatch}) {
 		if (getState().merge.years.length !== 0) return getState().merge.years;
-		if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
-			await delay(300);
-			const years = [2022, 2021, 2020];
-			dispatch(setYears(years));
-			return years;
-		}
 		const response = await fetch(`${process.env.REACT_APP_BACKEND_BASE_URL}getYears`);
 		if (!response.ok) return [];
 		const years = await response.json() as number[];
@@ -80,6 +77,20 @@ export const fetchYears = createAsyncThunk<number[], undefined, {state: RootStat
 	},
 	{
 		condition: (_, {getState}): boolean => getState().map.years.length === 0
+	}
+);
+
+export const fetchIndexValues = createAsyncThunk<IndexValue[], number, {state: RootState}>(
+	'map/fetchIndexValues',
+	async function (year,{getState, dispatch}) {
+		dispatch(setYear(year));
+		let indexValues = getState().merge.indexValuesThrowYears[year];
+		if (indexValues) return indexValues;
+		const response = await fetch(`${process.env.REACT_APP_BACKEND_BASE_URL}getComplexityIndexes?year=${year}`);
+		if (!response.ok) return [];
+		indexValues = await response.json() as IndexValue[];
+		dispatch(setIndexValues({year, indexValues}));
+		return indexValues;
 	}
 );
 

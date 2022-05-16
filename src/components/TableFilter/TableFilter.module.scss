@@ -6,6 +6,9 @@
   align-items: end;
   flex-wrap: wrap;
   gap: 1em;
+  @media (max-width: 500px) {
+    padding: 1.5em 1em 0.75em 1em;
+  }
 }
 .title {
   font-size: 1.6em;

@@ -8,7 +8,7 @@ import {IndexValue} from '../../types/IndexValue';
 import scssVariables from '../../index.scss';
 
 type Props = {
-	columnSetups: ColumnSetup[]
+	columnSetups: ColumnSetup<IndexValue>[]
 }
 
 const TableContent: React.FC<Props> = ({columnSetups}) => {
@@ -16,7 +16,7 @@ const TableContent: React.FC<Props> = ({columnSetups}) => {
 	const currentPage = useAppSelector(state => state.table.currentPage);
 	const rowsPerPage = useAppSelector(state => state.table.rowsPerPage);
 
-	const getColumnWidth = useCallback((setup: ColumnSetup) => {
+	const getColumnWidth = useCallback((setup: ColumnSetup<IndexValue>) => {
 		return setup.width ? { 'minWidth': `${setup.width.value}${ColumnWidthMetrics[setup.width.metric]}` } : { width: '100%' };
 	}, []);
 

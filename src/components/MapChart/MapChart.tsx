@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useMemo} from 'react';
 
 import styles from './MapChart.module.scss';
 import {Chart} from 'react-google-charts';
@@ -6,15 +6,15 @@ import {useAppSelector} from '../../hooks/typedReduxHooks';
 
 const MapChart: React.FC = () => {
 	const selectedRegion = useAppSelector(state => state.map.selectedRegion);
-	const data = [
-		['Country', 'Popularity'],
-		['Germany', 200],
-		['United States', 300],
-		['Brazil', 400],
-		['Canada', 500],
-		['France', 600],
-		['RU', 700]
-	];
+	const indexValues = useAppSelector(state => state.map.indexValues);
+
+	const data = useMemo(() => {
+		const data: (string | number)[][] = [['County', 'Index']];
+		for (const indexValue of indexValues) {
+			data.push([indexValue.country, indexValue.index]);
+		}
+		return data;
+	}, [indexValues]);
 
 	const options = {
 		region: selectedRegion.code,
@@ -26,18 +26,6 @@ const MapChart: React.FC = () => {
 	
 	return(<div className={styles.container}>
 		<Chart
-			chartEvents={[
-				{
-					eventName: 'select',
-					callback: ({ chartWrapper }) => {
-						const chart = chartWrapper.getChart();
-						const selection = chart.getSelection();
-						if (selection.length === 0) return;
-						const region = data[selection[0].row + 1];
-						console.log('Selected : ' + region);
-					}
-				}
-			]}
 			options={options}
 			chartType="GeoChart"
 			width="100%"
