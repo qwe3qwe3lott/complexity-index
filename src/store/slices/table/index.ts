@@ -57,8 +57,8 @@ const tableSlice = createSlice({
 		builder
 			.addCase(fetchIndexValues.fulfilled, ((state, action) => {
 				state.indexValues = action.payload;
-				state.sortSetup = { property: 'index', sortAtoZ: false };
 				state.currentPage = 1;
+				state.sortSetup = { property: 'index', sortAtoZ: false };
 			}));
 	}
 });
