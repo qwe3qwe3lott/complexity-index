@@ -7,12 +7,20 @@
   -webkit-appearance: none;
   -moz-appearance: none;
 }
+.loadingContainer {
+  display: grid;
+}
 .container::-webkit-scrollbar {
   width: 0.2em;
 }
 .container::-webkit-scrollbar-thumb {
   background-color: $secondary-color;
   border-radius: 0.1em;
+}
+.loading {
+  height: 4em;
+  width: 4em;
+  place-self: center;
 }
 .element {
   display: flex;

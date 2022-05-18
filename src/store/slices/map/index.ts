@@ -37,7 +37,8 @@ const initialState: MapState = {
 		{label: 'Polynesia', code: '061'}
 	],
 	selectedRegion: {label: 'World'},
-	indexValues: []
+	indexValues: [],
+	isLoading: false
 };
 
 const mapSlice = createSlice({
@@ -55,20 +56,27 @@ const mapSlice = createSlice({
 	},
 	extraReducers: (builder) => {
 		builder
-			.addCase(fetchIndexValues.fulfilled, ((state, action) => {
+			.addCase(fetchIndexValues.pending, (state) => {
+				state.isLoading = true;
+			})
+			.addCase(fetchIndexValues.fulfilled, (state, action) => {
 				state.indexValues = action.payload;
-			}));
+				state.isLoading = false;
+			})
+			.addCase(fetchIndexValues.rejected, (state) => {
+				state.isLoading = false;
+			});
 	}
 });
 
-export const fetchIndexValues = createAsyncThunk<IndexValue[], number, {state: RootState}>(
+export const fetchIndexValues = createAsyncThunk<IndexValue[], number, {state: RootState, rejectValue: undefined}>(
 	'map/fetchIndexValues',
-	async function (year,{getState, dispatch}) {
+	async function (year,{getState, dispatch, rejectWithValue}) {
 		dispatch(setYear(year));
 		let indexValues = getState().merge.indexValuesThrowYears[year];
 		if (indexValues) return indexValues;
 		const response = await fetch(`${process.env.REACT_APP_BACKEND_BASE_URL}getComplexityIndexes?year=${year}`);
-		if (!response.ok) return [];
+		if (!response.ok) return rejectWithValue(undefined);
 		indexValues = await response.json() as IndexValue[];
 		dispatch(setIndexValues({year, indexValues}));
 		return indexValues;
