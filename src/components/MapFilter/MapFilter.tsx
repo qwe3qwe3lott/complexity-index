@@ -10,6 +10,7 @@ const MapFilter: React.FC = () => {
 	const selectedYear = useAppSelector(state => state.map.selectedYear);
 	const regions = useAppSelector(state => state.map.regions);
 	const selectedRegion = useAppSelector(state => state.map.selectedRegion);
+	const isLoading = useAppSelector(state => state.map.isLoading);
 	const dispatch = useAppDispatch();
 
 	useEffect(() => {
@@ -17,14 +18,19 @@ const MapFilter: React.FC = () => {
 	}, []);
 
 	return(<div className={styles.container}>
-		<h2 className={styles.title}>Index on the map</h2>
+		<h2 className={styles.title}>{!isLoading ? 'Index on the map' : 'Data loading...'}</h2>
 		<div className={styles.filters}>
 			<select className={styles.select} value={selectedRegion.label} onChange={(event) => dispatch(setRegion(event.target.value))}>
 				{regions.map(region => <option key={region.label}>
 					{region.label}
 				</option>)}
 			</select>
-			<select className={styles.select} value={selectedYear} onChange={(event) => dispatch(fetchIndexValues(+event.target.value))}>
+			<select
+				className={styles.select}
+				value={selectedYear}
+				onChange={(event) => dispatch(fetchIndexValues(+event.target.value))}
+				disabled={isLoading}
+			>
 				<option value="0" disabled hidden>Choose year</option>
 				{years.map(year => <option key={year}>
 					{year}

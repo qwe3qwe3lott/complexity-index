@@ -14,4 +14,5 @@ export type TableState = {
 	currentPage: number
 	rowsPerPage: RowsPerPage
 	sortSetup: SortSetup<IndexValue>
+	isLoading: boolean
 }

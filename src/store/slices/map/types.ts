@@ -10,4 +10,5 @@ export type MapState = {
 	regions: Region[]
 	selectedRegion: Region
 	indexValues: IndexValue[]
+	isLoading: boolean
 }

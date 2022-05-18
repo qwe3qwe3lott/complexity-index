@@ -4,6 +4,7 @@ import styles from './TableContent.module.scss';
 import {ColumnModes, ColumnSetup, ColumnWidthMetrics} from '../../types/ColumnSetup';
 import {useAppSelector} from '../../hooks/typedReduxHooks';
 import {IndexValue} from '../../types/IndexValue';
+import loading from '../../assets/loading.svg';
 
 import scssVariables from '../../index.scss';
 
@@ -15,6 +16,7 @@ const TableContent: React.FC<Props> = ({columnSetups}) => {
 	const indexValues = useAppSelector(state => state.table.indexValues);
 	const currentPage = useAppSelector(state => state.table.currentPage);
 	const rowsPerPage = useAppSelector(state => state.table.rowsPerPage);
+	const isLoading = useAppSelector(state => state.table.isLoading);
 
 	const getColumnWidth = useCallback((setup: ColumnSetup<IndexValue>) => {
 		return setup.width ? { 'minWidth': `${setup.width.value}${ColumnWidthMetrics[setup.width.metric]}` } : { width: '100%' };
@@ -58,16 +60,19 @@ const TableContent: React.FC<Props> = ({columnSetups}) => {
 	}, []);
 
 	return(<ul className={styles.container} ref={listRef}>
-		<li/>
-		{currentIndexValues.map(indexValue => <li key={indexValue.id} className={styles.element}>
-			{columnSetups.map(columnSetup => <span
-				key={columnSetup.title}
-				className={styles.span}
-				style={{...getColumnWidth(columnSetup), ...getModifyStyles(indexValue[columnSetup.property as keyof IndexValue], columnSetup.mode)}}
-			>
-				{modifyValue(indexValue[columnSetup.property as keyof IndexValue], columnSetup.mode)}
-			</span>)}
-		</li>)}
+		{isLoading ? <img className={styles.loading} alt={'loading ring'} src={loading}/> :
+			<>
+				{currentIndexValues.map(indexValue => <li key={indexValue.id} className={styles.element}>
+					{columnSetups.map(columnSetup => <span
+						key={columnSetup.title}
+						className={styles.span}
+						style={{...getColumnWidth(columnSetup), ...getModifyStyles(indexValue[columnSetup.property as keyof IndexValue], columnSetup.mode)}}
+					>
+						{modifyValue(indexValue[columnSetup.property as keyof IndexValue], columnSetup.mode)}
+					</span>)}
+				</li>)}
+			</>
+		}
 	</ul>);
 };
 
