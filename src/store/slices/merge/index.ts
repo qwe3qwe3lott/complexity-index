@@ -27,7 +27,7 @@ const mergeSlice = createSlice({
 export const fetchYears = createAsyncThunk<number[], undefined, {state: RootState}>(
 	'merge/fetchYears',
 	async function () {
-		const response = await fetch(`${process.env.REACT_APP_BACKEND_BASE_URL}getYears`);
+		const response = await fetch(`${process.env.REACT_APP_BACKEND_BASE_URL}getIIPCYears`);
 		if (!response.ok) return [];
 		return await response.json() as number[];
 	},

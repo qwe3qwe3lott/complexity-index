@@ -75,7 +75,7 @@ export const fetchIndexValues = createAsyncThunk<IndexValue[], number, {state: R
 		dispatch(setYear(year));
 		let indexValues = getState().merge.indexValuesThrowYears[year];
 		if (indexValues) return indexValues;
-		const response = await fetch(`${process.env.REACT_APP_BACKEND_BASE_URL}getComplexityIndexes?year=${year}`);
+		const response = await fetch(`${process.env.REACT_APP_BACKEND_BASE_URL}getIIPCIndexes?year=${year}`);
 		if (!response.ok) return rejectWithValue(undefined);
 		indexValues = await response.json() as IndexValue[];
 		dispatch(setIndexValues({year, indexValues}));
