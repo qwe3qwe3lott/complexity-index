@@ -1,30 +1,26 @@
-import React, {useEffect} from 'react';
+import React from 'react';
 
 import styles from './TableFilter.module.scss';
 import {useAppDispatch, useAppSelector} from '../../hooks/typedReduxHooks';
-import {fetchIndexValues} from '../../store/slices/table';
-import {fetchYears} from '../../store/slices/merge';
+import {iipcAPI} from '../../services/IIPCService';
+import {setYear} from '../../store/slices/table';
 
 const TableFilter: React.FC = () => {
-	const years = useAppSelector(state => state.merge.years);
+	const {data: years, isLoading: isYearsLoading} = iipcAPI.useFetchYearsQuery(undefined);
 	const selectedYear = useAppSelector(state => state.table.selectedYear);
-	const isLoading = useAppSelector(state => state.table.isLoading);
+	const { isFetching: isLoading } = iipcAPI.useFetchIndexValuesQuery(selectedYear, { skip: !selectedYear });
 	const dispatch = useAppDispatch();
-
-	useEffect(() => {
-		dispatch(fetchYears());
-	}, []);
 
 	return(<div className={styles.container}>
 		<h2 className={styles.title}>Index in the table</h2>
 		<select
 			className={styles.select}
 			value={selectedYear}
-			onChange={(event) => dispatch(fetchIndexValues(+event.target.value))}
-			disabled={isLoading}
+			onChange={(event) => dispatch(setYear(+event.target.value))}
+			disabled={isYearsLoading || isLoading}
 		>
 			<option value="0" disabled hidden>Choose year</option>
-			{years.map(year => <option key={year}>
+			{years && years.map(year => <option key={year}>
 				{year}
 			</option>)}
 		</select>

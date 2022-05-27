@@ -1,8 +1,5 @@
-import {createAsyncThunk, createSlice, PayloadAction} from '@reduxjs/toolkit';
+import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 import {MapState} from './types';
-import {RootState} from '../../index';
-import {setIndexValues} from '../merge';
-import {IndexValue} from '../../../types/IndexValue';
 
 const initialState: MapState = {
 	selectedYear: 0,
@@ -36,9 +33,7 @@ const initialState: MapState = {
 		{label: 'Micronesia', code: '057'},
 		{label: 'Polynesia', code: '061'}
 	],
-	selectedRegion: {label: 'World'},
-	indexValues: [],
-	isLoading: false
+	selectedRegion: {label: 'World'}
 };
 
 const mapSlice = createSlice({
@@ -53,35 +48,9 @@ const mapSlice = createSlice({
 			if (!region) return;
 			state.selectedRegion = region;
 		}
-	},
-	extraReducers: (builder) => {
-		builder
-			.addCase(fetchIndexValues.pending, (state) => {
-				state.isLoading = true;
-			})
-			.addCase(fetchIndexValues.fulfilled, (state, action) => {
-				state.indexValues = action.payload;
-				state.isLoading = false;
-			})
-			.addCase(fetchIndexValues.rejected, (state) => {
-				state.isLoading = false;
-			});
 	}
 });
 
-export const fetchIndexValues = createAsyncThunk<IndexValue[], number, {state: RootState, rejectValue: undefined}>(
-	'map/fetchIndexValues',
-	async function (year,{getState, dispatch, rejectWithValue}) {
-		dispatch(setYear(year));
-		let indexValues = getState().merge.indexValuesThrowYears[year];
-		if (indexValues) return indexValues;
-		const response = await fetch(`${process.env.REACT_APP_BACKEND_BASE_URL}getIIPCIndexes?year=${year}`);
-		if (!response.ok) return rejectWithValue(undefined);
-		indexValues = await response.json() as IndexValue[];
-		dispatch(setIndexValues({year, indexValues}));
-		return indexValues;
-	}
-);
 
 export const {setYear, setRegion} = mapSlice.actions;
 export default mapSlice.reducer;

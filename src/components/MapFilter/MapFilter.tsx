@@ -1,21 +1,17 @@
-import React, {useEffect} from 'react';
+import React from 'react';
 
 import styles from './MapFilter.module.scss';
 import {useAppDispatch, useAppSelector} from '../../hooks/typedReduxHooks';
-import {fetchIndexValues, setRegion} from '../../store/slices/map';
-import {fetchYears} from '../../store/slices/merge';
+import {setRegion, setYear} from '../../store/slices/map';
+import {iipcAPI} from '../../services/IIPCService';
 
 const MapFilter: React.FC = () => {
-	const years = useAppSelector(state => state.merge.years);
+	const {data: years, isLoading: isYearsLoading} = iipcAPI.useFetchYearsQuery(undefined);
 	const selectedYear = useAppSelector(state => state.map.selectedYear);
+	const { isFetching: isLoading } = iipcAPI.useFetchIndexValuesQuery(selectedYear, { skip: !selectedYear });
 	const regions = useAppSelector(state => state.map.regions);
 	const selectedRegion = useAppSelector(state => state.map.selectedRegion);
-	const isLoading = useAppSelector(state => state.map.isLoading);
 	const dispatch = useAppDispatch();
-
-	useEffect(() => {
-		dispatch(fetchYears());
-	}, []);
 
 	return(<div className={styles.container}>
 		<h2 className={styles.title}>{!isLoading ? 'Index on the map' : 'Data loading...'}</h2>
@@ -28,11 +24,11 @@ const MapFilter: React.FC = () => {
 			<select
 				className={styles.select}
 				value={selectedYear}
-				onChange={(event) => dispatch(fetchIndexValues(+event.target.value))}
-				disabled={isLoading}
+				onChange={(event) => dispatch(setYear(+event.target.value))}
+				disabled={isLoading || isYearsLoading}
 			>
 				<option value="0" disabled hidden>Choose year</option>
-				{years.map(year => <option key={year}>
+				{years && years.map(year => <option key={year}>
 					{year}
 				</option>)}
 			</select>

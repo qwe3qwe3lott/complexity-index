@@ -1,14 +1,17 @@
-import {configureStore} from '@reduxjs/toolkit';
+import {combineReducers, configureStore} from '@reduxjs/toolkit';
 import mapReducer from './slices/map';
 import tableReducer from './slices/table';
-import mergeReducer from './slices/merge';
+import {iipcAPI} from '../services/IIPCService';
+
+const rootReducer = combineReducers({
+	map: mapReducer,
+	table: tableReducer,
+	[iipcAPI.reducerPath]: iipcAPI.reducer
+});
 
 const store = configureStore({
-	reducer: {
-		map: mapReducer,
-		table: tableReducer,
-		merge: mergeReducer
-	}
+	reducer: rootReducer,
+	middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(iipcAPI.middleware)
 });
 
 export default store;

@@ -4,6 +4,8 @@ import scssVariables from '../index.scss';
 import {ColumnModes} from '../enums/ColumnModes';
 import {RowsPerPage} from '../enums/RowsPerPage';
 import {ColumnWidthMetrics} from '../enums/ColumnWidthMetrics';
+import {IndexValue} from '../types/IndexValue';
+import {SortSetup} from '../types/SortSetup';
 
 // Calculates count of table pages
 export const useTotalPages = (totalRows: number, rowsPerPage: RowsPerPage): number => {
@@ -108,4 +110,34 @@ export const useModifyValue = <T>(): (value: T[keyof T] | number, mode: ColumnMo
 			return value;
 		}
 	}, []);
+};
+
+// Returns sorted displayed indexValues
+export const useSortedIndexValues = (indexValues: IndexValue[], sortSetup: SortSetup<IndexValue>): IndexValue[] => {
+	return useMemo(() => {
+		let sortedIndexValues: IndexValue[] = [...indexValues];
+		switch (sortSetup.property) {
+		case 'country':
+			sortedIndexValues = sortedIndexValues.sort((a, b) => {
+				if (a.country < b.country) return sortSetup.sortAtoZ ? -1 : 1;
+				if (a.country > b.country) return sortSetup.sortAtoZ ? 1 : -1;
+				return 0;
+			});
+			break;
+		case 'index':
+			sortedIndexValues = sortedIndexValues.sort((a, b) => sortSetup.sortAtoZ ? a.index - b.index : b.index - a.index);
+			break;
+		case 'dynamic':
+			sortedIndexValues = sortedIndexValues.sort((a, b) => {
+				if (a.dynamic === null) {
+					if (b.dynamic == null) return 0;
+					else return 1;
+				}
+				if (b.dynamic === null) return -1;
+				return sortSetup.sortAtoZ ? a.dynamic - b.dynamic : b.dynamic - a.dynamic;
+			});
+			break;
+		}
+		return sortedIndexValues;
+	}, [indexValues, sortSetup]);
 };

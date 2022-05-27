@@ -3,14 +3,16 @@ import React, {useMemo} from 'react';
 import styles from './MapChart.module.scss';
 import {Chart} from 'react-google-charts';
 import {useAppSelector} from '../../hooks/typedReduxHooks';
+import {iipcAPI} from '../../services/IIPCService';
 
 const MapChart: React.FC = () => {
+	const selectedYear = useAppSelector(state => state.map.selectedYear);
 	const selectedRegion = useAppSelector(state => state.map.selectedRegion);
-	const indexValues = useAppSelector(state => state.map.indexValues);
+	const { data: indexValues } = iipcAPI.useFetchIndexValuesQuery(selectedYear, { skip: !selectedYear });
 
 	const data = useMemo(() => {
 		const data: (string | number)[][] = [['County', 'Index']];
-		for (const indexValue of indexValues) {
+		for (const indexValue of indexValues ?? []) {
 			data.push([indexValue.country, indexValue.index]);
 		}
 		return data;

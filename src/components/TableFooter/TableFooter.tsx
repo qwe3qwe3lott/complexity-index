@@ -4,19 +4,21 @@ import styles from './TableFooter.module.scss';
 import {useAppDispatch, useAppSelector} from '../../hooks/typedReduxHooks';
 import {setCurrentPage, setRowsPerPage} from '../../store/slices/table';
 import {useFirstPageFlag, useLastPageFlag, usePageInfo, useRowsPerPageList, useTotalPages, useTotalPagesArray} from '../../hooks/tableHooks';
+import {iipcAPI} from '../../services/IIPCService';
 
 const TableFooter: React.FC = () => {
-	const totalRows = useAppSelector(state => state.table.indexValues.length);
+	const selectedYear = useAppSelector(state => state.table.selectedYear);
+	const { data: totalRows } = iipcAPI.useFetchIndexValuesQuery(selectedYear, { skip: !selectedYear });
 	const currentPage = useAppSelector(state => state.table.currentPage);
 	const rowsPerPage = useAppSelector(state => state.table.rowsPerPage);
 	const dispatch = useAppDispatch();
 
-	const totalPages = useTotalPages(totalRows, rowsPerPage);
+	const totalPages = useTotalPages(totalRows ? totalRows.length : 0, rowsPerPage);
 
 	const isThisFirstPage = useFirstPageFlag(currentPage);
 	const isThisLastPage = useLastPageFlag(currentPage, totalPages);
 
-	const pageInfo = usePageInfo(currentPage, totalRows, rowsPerPage, isThisLastPage);
+	const pageInfo = usePageInfo(currentPage, totalRows ? totalRows.length : 0, rowsPerPage, isThisLastPage);
 
 	const rowsPerPageList = useRowsPerPageList();
 
