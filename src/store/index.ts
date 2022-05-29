@@ -1,17 +1,17 @@
 import {combineReducers, configureStore} from '@reduxjs/toolkit';
 import mapReducer from './slices/map';
 import tableReducer from './slices/table';
-import {iipcAPI} from '../services/IIPCService';
+import {iipdAPI} from '../services/IIPDService';
 
 const rootReducer = combineReducers({
 	map: mapReducer,
 	table: tableReducer,
-	[iipcAPI.reducerPath]: iipcAPI.reducer
+	[iipdAPI.reducerPath]: iipdAPI.reducer
 });
 
 const store = configureStore({
 	reducer: rootReducer,
-	middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(iipcAPI.middleware)
+	middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(iipdAPI.middleware)
 });
 
 export default store;

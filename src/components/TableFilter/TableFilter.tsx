@@ -2,13 +2,13 @@ import React from 'react';
 
 import styles from './TableFilter.module.scss';
 import {useAppDispatch, useAppSelector} from '../../hooks/typedReduxHooks';
-import {iipcAPI} from '../../services/IIPCService';
+import {iipdAPI} from '../../services/IIPDService';
 import {setYear} from '../../store/slices/table';
 
 const TableFilter: React.FC = () => {
-	const {data: years, isLoading: isYearsLoading} = iipcAPI.useFetchYearsQuery(undefined);
+	const {data: years, isLoading: isYearsLoading} = iipdAPI.useFetchYearsQuery(undefined);
 	const selectedYear = useAppSelector(state => state.table.selectedYear);
-	const { isFetching: isLoading } = iipcAPI.useFetchIndexValuesQuery(selectedYear, { skip: !selectedYear });
+	const { isFetching: isLoading } = iipdAPI.useFetchIndexValuesQuery(selectedYear, { skip: !selectedYear });
 	const dispatch = useAppDispatch();
 
 	return(<div className={styles.container}>

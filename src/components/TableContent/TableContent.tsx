@@ -7,7 +7,7 @@ import {IndexValue} from '../../types/IndexValue';
 import loading from '../../assets/loading.svg';
 
 import {useCurrentValues, useGetColumnWidth, useGetModifiedStyles, useListRef, useModifyValue, useSortedIndexValues} from '../../hooks/tableHooks';
-import {iipcAPI} from '../../services/IIPCService';
+import {iipdAPI} from '../../services/IIPDService';
 
 type Props = {
 	columnSetups: ColumnSetup<IndexValue>[]
@@ -16,7 +16,7 @@ type Props = {
 const TableContent: React.FC<Props> = ({columnSetups}) => {
 	const selectedYear = useAppSelector(state => state.table.selectedYear);
 	const sortSetup = useAppSelector(state => state.table.sortSetup);
-	const { data: indexValues, isFetching: isLoading } = iipcAPI.useFetchIndexValuesQuery(selectedYear, { skip: !selectedYear });
+	const { data: indexValues, isFetching: isLoading } = iipdAPI.useFetchIndexValuesQuery(selectedYear, { skip: !selectedYear });
 	const sortedIndexValues = useSortedIndexValues(indexValues ?? [], sortSetup);
 	const currentPage = useAppSelector(state => state.table.currentPage);
 	const rowsPerPage = useAppSelector(state => state.table.rowsPerPage);
